@@ -1,7 +1,6 @@
 const itemsSection = document.getElementById("items");
 const url = "http://localhost:3000/api/products"
 
-
 function updateQuantity() {
     var itemNumbers_ = document.getElementsByClassName('itemQuantity')
     console.log(itemNumbers_.length)
@@ -13,20 +12,13 @@ function updateQuantity() {
 
             let getOldbasketDataItems = JSON.parse(localStorage.getItem("basketDataItems"));
 
-
-
-
-           
-            let oldbasketDataItems = JSON.parse(localStorage.getItem("basketDataItems"));
+    let oldbasketDataItems = JSON.parse(localStorage.getItem("basketDataItems"));
             let itemId = event.target.parentElement.parentElement.parentElement.parentElement.getAttribute("data-id")
             let color_select = event.target.parentElement.parentElement.parentElement.parentElement.getAttribute("data-color")
 
             let newProductNumber = event.target.value
           let item_set_id = itemId +'itemColor'+ color_select
-       
-
-            oldbasketDataItems.filter((data) => {
-
+           oldbasketDataItems.filter((data) => {
                 if (data.id == itemId && item_set_id ==  data.newIdSet) { 
                     console.log('sames')
                     SendNewObject = {
@@ -48,9 +40,7 @@ function updateQuantity() {
                     oldbasketDataItemsNew.push(SendNewObject)
                     localStorage.setItem('basketDataItems', JSON.stringify(oldbasketDataItemsNew));
 
-
-
-                    let arr_ = []
+                   let arr_ = []
                     fetch(url)
                         .then(response => response.json())
                         .then(prouctsDatas => prouctsDatas.filter((item) => {
