@@ -8,24 +8,24 @@ function updateQuantity() {
     for (i = 0; i < itemNumbers_.length; i++) {
         productNumber_ = itemNumbers_[i].value
 
-        itemNumbers_[i].addEventListener('change',  function changeFonction(event) {
+        itemNumbers_[i].addEventListener('change', function changeFonction(event) {
 
             let getOldbasketDataItems = JSON.parse(localStorage.getItem("basketDataItems"));
 
-    let oldbasketDataItems = JSON.parse(localStorage.getItem("basketDataItems"));
+            let oldbasketDataItems = JSON.parse(localStorage.getItem("basketDataItems"));
             let itemId = event.target.parentElement.parentElement.parentElement.parentElement.getAttribute("data-id")
             let color_select = event.target.parentElement.parentElement.parentElement.parentElement.getAttribute("data-color")
 
             let newProductNumber = event.target.value
-          let item_set_id = itemId +'itemColor'+ color_select
-           oldbasketDataItems.filter((data) => {
-                if (data.id == itemId && item_set_id ==  data.newIdSet) { 
+            let item_set_id = itemId + 'itemColor' + color_select
+            oldbasketDataItems.filter((data) => {
+                if (data.id == itemId && item_set_id == data.newIdSet) {
                     console.log('sames')
                     SendNewObject = {
                         "color": data.color,
                         "id": data.id,
                         "productNumber": newProductNumber,
-                        "newIdSet" : item_set_id
+                        "newIdSet": item_set_id
                     }
                     let rest_getOldbasketDataItems_ = getOldbasketDataItems.filter((datas) => {
 
@@ -40,7 +40,7 @@ function updateQuantity() {
                     oldbasketDataItemsNew.push(SendNewObject)
                     localStorage.setItem('basketDataItems', JSON.stringify(oldbasketDataItemsNew));
 
-                   let arr_ = []
+                    let arr_ = []
                     fetch(url)
                         .then(response => response.json())
                         .then(prouctsDatas => prouctsDatas.filter((item) => {
@@ -65,9 +65,6 @@ function updateQuantity() {
 
 
                         }))
-                
-    
-
 
 
 
@@ -81,7 +78,7 @@ function updateQuantity() {
 
 
     }
-} 
+}
 
 
 
@@ -130,118 +127,116 @@ const basketDataDisplay = document.getElementById("cart__items");
 function delete_item(event) {
     console.log('clock')
 
-        let getOldBasketItemId = JSON.parse(localStorage.getItem("basketItemId"));
-        let getOldbasketDataItems = JSON.parse(localStorage.getItem("basketDataItems"));
-        let data_set_delete = event.target.parentElement.parentElement.parentElement.parentElement.getAttribute("data-id")
-        let data_color = event.target.parentElement.parentElement.parentElement.parentElement.getAttribute("data-color")
+    let getOldBasketItemId = JSON.parse(localStorage.getItem("basketItemId"));
+    let getOldbasketDataItems = JSON.parse(localStorage.getItem("basketDataItems"));
+    let data_set_delete = event.target.parentElement.parentElement.parentElement.parentElement.getAttribute("data-id")
+    let data_color = event.target.parentElement.parentElement.parentElement.parentElement.getAttribute("data-color")
 
 
 
 
-        let rest_getOldbasketDataItems = getOldbasketDataItems.filter((data) => {
+    let rest_getOldbasketDataItems = getOldbasketDataItems.filter((data) => {
 
-            let countOtherItems = 0
-            const otherItems = getOldbasketDataItems.filter(item => {
-                if (item.id == data_set_delete) {
-                    countOtherItems += 1
-                }
+        let countOtherItems = 0
+        const otherItems = getOldbasketDataItems.filter(item => {
+            if (item.id == data_set_delete) {
+                countOtherItems += 1
+            }
+        })
+        if (countOtherItems <= 1) {
+
+            let rest_basketItemId = getOldBasketItemId.filter((data) => {
+
+
+                return data !== data_set_delete
             })
-            if (countOtherItems <= 1) {
 
-                let rest_basketItemId = getOldBasketItemId.filter((data) => {
+            localStorage.setItem('basketItemId', JSON.stringify(rest_basketItemId));
+
+        }
+        return data.color !== data_color
 
 
-                    return data !== data_set_delete
+    })
+
+
+
+    // 
+    localStorage.setItem('basketDataItems', JSON.stringify(rest_getOldbasketDataItems));
+
+    function cleanBasketHtml() {
+        basketDataDisplay.innerHTML = ''
+    }
+    cleanBasketHtml()
+
+
+    displayBasketData()
+
+    function updateTotalToPay() {
+        fetch(url)
+            .then(response => response.json())
+            .then(prouctsDatas => prouctsDatas.filter((item) => {
+
+                setItem_filter = item
+
+                let basketDatasStorage = localStorage.getItem('basketDataItems')
+
+                let datason = JSON.parse(basketDatasStorage)
+                datason.filter((item2) => {
+                    let item_id_ = item2.id
+                    if (item_id_.includes(item._id)) {
+
+                        let toAdd = item.price * parseInt(item2.productNumber)
+
+                        totalUpdate += toAdd
+
+                        document.getElementById("totalPrice").innerHTML = totalUpdate
+                        document.getElementById("totalQuantity").innerHTML = datason.length
+
+
+                    }
                 })
 
-                localStorage.setItem('basketItemId', JSON.stringify(rest_basketItemId));
 
-            }
-            return data.color !== data_color 
-
-
-        })
+                if (datason.length < 1) {
+                    document.getElementById("totalPrice").innerHTML = ''
+                    document.getElementById("totalQuantity").innerHTML = ''
+                }
 
 
-
-        // 
-        localStorage.setItem('basketDataItems', JSON.stringify(rest_getOldbasketDataItems));
-
-        function cleanBasketHtml(){
-            basketDataDisplay.innerHTML = ''
-        }
-        cleanBasketHtml()
-      
-      
-            displayBasketData()
-            function updateTotalToPay() {
-                fetch(url)
-                .then(response => response.json())
-                .then(prouctsDatas => prouctsDatas.filter((item) => {
-        
-                    setItem_filter = item
-        
-                    let basketDatasStorage = localStorage.getItem('basketDataItems')
-        
-                    let datason = JSON.parse(basketDatasStorage)
-                    datason.filter((item2) => {
-                        let item_id_ = item2.id
-                        if (item_id_.includes(item._id)) {
-        
-                            let toAdd = item.price * parseInt(item2.productNumber)
-   
-                            totalUpdate += toAdd
-        
-                            document.getElementById("totalPrice").innerHTML = totalUpdate
-                            document.getElementById("totalQuantity").innerHTML = datason.length
-
-                            
-                        }
-                    })
-        
-                 
-                    if(datason.length < 1){
-                        document.getElementById("totalPrice").innerHTML = ''
-                        document.getElementById("totalQuantity").innerHTML = ''
-                    }
-        
-        
-                }))
-            }
-    
-            updateTotalToPay() 
-            totalUpdate = 0
-           
-        
-      
-          setTimeout(function(){
-              return updateQuantity()
-          }, 3000)  
-  
-       
-      //  window.location.href = "../html/cart.html"
-
+            }))
     }
 
+    updateTotalToPay()
+    totalUpdate = 0
 
 
+
+    setTimeout(function() {
+        return updateQuantity()
+    }, 3000)
+
+
+    //  window.location.href = "../html/cart.html"
+
+}
 
 
 
 
 /* card page */
 function displayBasketData() {
- setTimeout(function(){
-  let deletProductBtn
-  deletProductBtn = document.getElementsByClassName("deleteItem") 
+    setTimeout(function() {
+        let deletProductBtn
+        deletProductBtn = document.getElementsByClassName("deleteItem")
         for (let i = 0; i < deletProductBtn.length; i++) {
-        var  deleteBtn = deletProductBtn[i]
+            var deleteBtn = deletProductBtn[i]
             deleteBtn.addEventListener("click", delete_item)
-          }
-    
-      
+        }
 
-    },1000)
+
+
+    }, 1000)
 
     fetch(url)
         .then(response => response.json())
@@ -358,16 +353,15 @@ window.addEventListener('load', function() {
             })
             .then((data) => {
 
-           
-                function validateEmail_(email) 
-                {
-                    if(email.indexOf('@') > 0){
-                       return true
-                    }else{
+
+                function validateEmail_(email) {
+                    if (email.indexOf('@') > 0) {
+                        return true
+                    } else {
                         return false
                     }
 
-               }
+                }
                 //validation form
 
                 //validation form
@@ -412,11 +406,9 @@ window.addEventListener('load', function() {
                 if (user_email == "") {
                     document.getElementById('emailErrorMsg').innerHTML = "Veuillez entrer votre mail"
 
-                } else if(!validateEmail_(user_email)){
+                } else if (!validateEmail_(user_email)) {
                     document.getElementById('emailErrorMsg').innerHTML = "Veuillez entrer un mail correcte"
-                }
-                
-                else {
+                } else {
                     document.getElementById('emailErrorMsg').innerHTML = ""
                     validateEmail = true
 
@@ -445,38 +437,32 @@ window.addEventListener('load', function() {
 
 
 
+document.addEventListener('DOMContentLoaded', function() {
+
+    //delete product from basket
+
+    setTimeout(function() {
 
 
+        let deletProductBtn
+
+        deletProductBtn = document.getElementsByClassName("deleteItem")
+        for (let i = 0; i < deletProductBtn.length; i++) {
 
 
-document.addEventListener('DOMContentLoaded', function () {
- 
-//delete product from basket
+            let deleteBtn
 
-setTimeout(function(){
-
-    
-let deletProductBtn
-   
-    deletProductBtn = document.getElementsByClassName("deleteItem") 
-    for (let i = 0; i < deletProductBtn.length; i++) {
-
-       
-        let deleteBtn
-
-         deleteBtn = deletProductBtn[i]
-        console.log(deletProductBtn[i] + 'one click')
+            deleteBtn = deletProductBtn[i]
+            console.log(deletProductBtn[i] + 'one click')
 
 
-        deleteBtn.addEventListener("click", delete_item)
+            deleteBtn.addEventListener("click", delete_item)
 
 
-    }
+        }
 
-//on quantity change
-updateQuantity()
+        //on quantity change
+        updateQuantity()
 
-},1000)
+    }, 1000)
 })
-
-
